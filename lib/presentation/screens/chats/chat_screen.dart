@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_yes_no_app/domain/entities/message.dart';
+import 'package:flutter_yes_no_app/presentation/providers/chat_provider.dart';
 import 'package:flutter_yes_no_app/presentation/widgets/chats/her_message_bubble.dart';
 import 'package:flutter_yes_no_app/presentation/widgets/chats/my_message_bubble.dart';
 import 'package:flutter_yes_no_app/presentation/widgets/shared/message_field_box.dart';
+import 'package:provider/provider.dart';
 
 class ChatScreen extends StatelessWidget {
   const ChatScreen({super.key});
@@ -28,6 +31,8 @@ class ChatScreen extends StatelessWidget {
 class _ChatView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final chatProvider = context.watch<ChatProvider>();
+
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -37,14 +42,20 @@ class _ChatView extends StatelessWidget {
               child:
                   //Container(color:Colors.amber)
                   ListView.builder(
-                itemCount: 100,
+                    controller: chatProvider.chatScrollController,
+                itemCount: chatProvider.messageList.length,
                 itemBuilder: (BuildContext context, int index) {
-                  return (index % 2 ==0) ? const MyMessageBubble() : const HerMessageBubble(); //Text('Indice $index') ;
-
+                  final message = chatProvider.messageList[index];
+                  return (message.fromWho == FromWho.mine)
+                      ? MyMessageBubble(message: message)
+                      : const HerMessageBubble(); //Text('Indice $index') ;
                 },
               ),
             ),
-            const MessageFieldBox()
+            MessageFieldBox(
+              //onValue: (value) {  chatProvider.SendMessage(value);  },
+              onValue: chatProvider.sendMessage,
+            )
           ],
         ),
       ),
