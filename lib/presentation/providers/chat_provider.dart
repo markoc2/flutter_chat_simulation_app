@@ -20,6 +20,7 @@ class ChatProvider extends ChangeNotifier {
   }
 
   Future<void> moveScrollToBottom() async {
+    await Future.delayed(const Duration(microseconds: 100));
     chatScrollController.animateTo(
         chatScrollController.position.maxScrollExtent,
         duration: const Duration(milliseconds: 300),
